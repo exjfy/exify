@@ -157,41 +157,42 @@
   <script type="text/javascript" src="assets/javascript/portfolio.js"></script>
 
   <script>
-  window.addEventListener("load", () => {
-    const popup = document.getElementById("start-popup");
-    const video = document.getElementById("background");
-    const audio = document.getElementById("audio");
+document.addEventListener("DOMContentLoaded", () => {
+  // Wait until portfolio.js defines app.startIntro
+  const waitForIntro = setInterval(() => {
+    if (window.app && typeof app.startIntro === "function") {
+      clearInterval(waitForIntro);
 
-    popup.addEventListener("click", async () => {
-      // Fade the popup away
-      popup.classList.add("fade-out");
+      const popup = document.getElementById("start-popup");
+      const video = document.getElementById("background");
+      const audio = document.getElementById("audio");
 
-      // Autoplay unlock
-      try {
-        if (video) {
-          video.muted = false;
-          await video.play();
+      popup.addEventListener("click", async () => {
+        // Fade popup away
+        popup.classList.add("fade-out");
+
+        try {
+          if (video) {
+            video.muted = false;
+            await video.play();
+          }
+          if (audio && audio.src) {
+            audio.volume = 0.5;
+            await audio.play();
+          }
+        } catch (err) {
+          console.warn("Autoplay error:", err);
         }
-        if (audio && audio.src) {
-          audio.volume = 0.5;
-          await audio.play();
-        }
-      } catch (err) {
-        console.warn("Autoplay blocked:", err);
-      }
 
-      // Wait for portfolio.js to load app.startIntro
-      const waitForIntro = setInterval(() => {
-        if (window.app && typeof app.startIntro === "function") {
-          clearInterval(waitForIntro);
-          app.startIntro(); // 🔥 starts your intro sequence
-        }
-      }, 100);
+        // 🚀 Run intro now that everything is ready
+        app.startIntro();
 
-      // Remove popup after fade
-      setTimeout(() => popup.remove(), 600);
-    });
-  });
-  </script>
+        // Remove popup after fade
+        setTimeout(() => popup.remove(), 600);
+      });
+    }
+  }, 100);
+});
+</script>
 </body>
 </html>
