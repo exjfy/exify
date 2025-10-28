@@ -1,13 +1,13 @@
 'use strict';
 
-/* ---------- Click-to-Enter gate so autoplay is allowed ---------- */
+
 let entered = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('enter-overlay');
   const button = document.getElementById('enter-button');
 
-  // make sure we have the media elements bound to app
+  
   app.videoElement = document.getElementById('background');
   app.audioElement = document.getElementById('audio');
 
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       entered = true;
 
-      // after user gesture, unmute and play
+      
       if (!app.shouldIgnoreVideo) {
         if (app.videoElement) { app.videoElement.muted = false; app.videoElement.play().catch(()=>{}); }
         if (app.audioElement) { app.audioElement.muted = false; app.audioElement.play().catch(()=>{}); }
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-/* ---------- Original logic (with small fixes for autoplay + href) ---------- */
+
 
 const ipgeolocation = 'https://api.ipgeolocation.io/ipgeo?apiKey=31ece79449854d1c8059ec105e82b33d';
 const timeouts = [];
@@ -45,7 +45,7 @@ $(document).ready(() => {
   for (let i in links) {
     let link = links[i];
 
-    // fix: avoid double protocol
+    
     $('#marquee').append(`<a href="${link.link}" target="_blank">${link.name}</a>`);
     link = $('#marquee').children('a').last();
 
@@ -73,10 +73,10 @@ if ($.cookie('videoTime')) {
   if (app.audioElement) app.audioElement.currentTime = $.cookie('videoTime');
 }
 
-// disable right click
+
 document.addEventListener('contextmenu', (event) => event.preventDefault());
 
-// spacebar toggles after intro
+
 document.body.onkeyup = (event) => {
   if (event.keyCode == 32 && app.skippedIntro) {
     if (app.backgroundToggler) {
@@ -229,3 +229,4 @@ const skipIntro = () => {
 };
 
 const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
+
