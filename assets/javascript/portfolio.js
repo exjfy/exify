@@ -9,15 +9,15 @@ const mobileAndTabletCheck = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IE
 $(document).ready(() => {
   const links = [
     {
-      name: 'biosite1',
+      name: 'my discord',
       link: 'discord.com/users/1105635615170637864',
     },
     {
-      name: 'biosite2',
+      name: 'discord server',
       link: 'https://discord.gg/unlocked',
     },
     {
-      name: 'biosite3',
+      name: 'free fortnite cheats',
       link: 'https://tinyurl.com/3jna7bdj',
     }
   ];
@@ -38,7 +38,7 @@ $(document).ready(() => {
     app.shouldIgnoreVideo = true;
   }
 
-  app.titleChanger(['e', 'xi', '', 'exif', 'exify']);
+  app.titleChanger(['e', 'x', 'i', 'f', 'y', 'exify']);
   app.iconChanger(['assets/icons/rose1.jpg', 'assets/icons/rose2.jpg', 'assets/icons/rose3.jpg', 'assets/icons/rose4.jpg', 'assets/icons/rose5.jpg', 'assets/icons/rose6.jpg', 'assets/icons/rose7.jpg', 'assets/icons/rose7.jpg', 'assets/icons/rose1.jpg']);
 });
 
@@ -200,4 +200,3 @@ const skipIntro = () => {
 const clearCursor = () => {
   return $('span').siblings('.typed-cursor').css('opacity', '0');
 };
-
