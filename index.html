@@ -21,10 +21,66 @@
   <link rel="stylesheet" type="text/css" href="assets/stylesheets/stylesheet.css" />
   <link rel="stylesheet" type="text/css"
     href="../cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+
+  <style>
+    /* Popup overlay */
+    #start-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      cursor: pointer;
+    }
+
+    #start-popup.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .popup-box {
+      text-align: center;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px 60px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .popup-box:hover {
+      transform: scale(1.03);
+    }
+
+    .popup-box h1 {
+      font-size: 2rem;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .popup-box p {
+      font-size: 1rem;
+      color: #aaa;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
   <script type="text/javascript" src="assets/javascript/app.js"></script>
+
+  <!-- Popup that appears first -->
+  <div id="start-popup">
+    <div class="popup-box">
+      <h1>Click to Start</h1>
+      <p>Begin the experience</p>
+    </div>
+  </div>
 
   <div id="main">
     <table class="box">
@@ -49,7 +105,6 @@
     <h1 class="brand-header">
       <a href="https://onlyfans.com/exifyandlost" target="_BLANK">exify.tech</a>
     </h1>
-
     <p><span id="brand"></span></p>
   </div>
 
@@ -64,17 +119,17 @@
       <source src="" type="audio/mp4" />
       <script>
         const audio = document.getElementById('audio');
-
         app.audioElement = audio;
         app.audioElement.volume = 50;
       </script>
     </audio>
 
-    <video id="background" loop="">
-      <source src="https://cdn.discordapp.com/attachments/1116493465136681013/1432810654942625994/EsDeeKid__Rico_Ace_-_Phantom_-_EsDeeKid_1080p_h264.mp4?ex=69026868&is=690116e8&hm=eee53d1e0b3ba72acd3a8e2f319b680c994f4f187e661a4089bc6bbefe562f34&" />
+    <video id="background" loop muted playsinline>
+      <source
+        src="https://cdn.discordapp.com/attachments/1116493465136681013/1432810654942625994/EsDeeKid__Rico_Ace_-_Phantom_-_EsDeeKid_1080p_h264.mp4?ex=69026868&is=690116e8&hm=eee53d1e0b3ba72acd3a8e2f319b680c994f4f187e661a4089bc6bbefe562f34&"
+        type="video/mp4" />
       <script>
         const video = document.getElementById('background');
-
         app.videoElement = video;
         app.videoElement.volume = 50;
       </script>
@@ -94,6 +149,39 @@
   <script type="text/javascript" src="assets/javascript/lib/jquery.cookie.min.js"></script>
   <script type="text/javascript" src="assets/javascript/lib/typed.min.js"></script>
   <script type="text/javascript" src="assets/javascript/portfolio.js"></script>
+
+  <!-- Popup logic -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const popup = document.getElementById("start-popup");
+      const video = document.getElementById("background");
+      const audio = document.getElementById("audio");
+
+      popup.addEventListener("click", async () => {
+        popup.classList.add("fade-out");
+
+        try {
+          if (video) {
+            video.muted = false;
+            await video.play();
+          }
+          if (audio && audio.src) {
+            audio.volume = 0.5;
+            await audio.play();
+          }
+        } catch (err) {
+          console.warn("Autoplay blocked:", err);
+        }
+
+        // Start intro logic here
+        if (window.app && typeof app.startIntro === "function") {
+          app.startIntro();
+        }
+
+        setTimeout(() => popup.remove(), 600);
+      });
+    });
+  </script>
 </body>
 
 </html>
