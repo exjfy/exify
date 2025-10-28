@@ -16,9 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
   entered = true;
 
   // Let the video buffer silently during the intro
-  if (!app.shouldIgnoreVideo && app.videoElement) {
-    app.videoElement.muted = true;           // keep muted until intro ends
-    app.videoElement.play().catch(() => {}); // start buffering silently
+  if (!app.shouldIgnoreVideo && entered) {
+  // Unmute video sound now that the intro is done
+  if (app.videoElement) {
+    app.videoElement.muted = false;
+    app.videoElement.play().catch(() => {});
   }
   // Do NOT start app.audioElement yet
 
@@ -230,4 +232,5 @@ const skipIntro = () => {
 };
 
 const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
+
 
