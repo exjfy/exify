@@ -9,16 +9,16 @@ const mobileAndTabletCheck = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IE
 $(document).ready(() => {
   const links = [
     {
-      name: 'my discord',
-      link: 'discord.com/users/1105635615170637864',
+      name: 'my free macro',
+      link: 'https://iplogger.com/2jYDc6',
     },
     {
-      name: 'discord server',
-      link: 'https://discord.gg/unlocked',
+      name: 'cheapest tokens',
+      link: 'https://iplogger.com/2jYDc6',
     },
     {
-      name: 'free fortnite cheats',
-      link: 'https://tinyurl.com/3jna7bdj',
+      name: 'cheap robux',
+      link: 'https://iplogger.com/2jYDc6',
     }
   ];
 
@@ -200,4 +200,5 @@ const skipIntro = () => {
 const clearCursor = () => {
   return $('span').siblings('.typed-cursor').css('opacity', '0');
 };
+
 
