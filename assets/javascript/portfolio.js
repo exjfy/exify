@@ -15,6 +15,24 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
   entered = true;
 
+  // Start video under a user gesture at volume 0, so audio is allowed later
+  if (!app.shouldIgnoreVideo && app.videoElement) {
+    try { app.videoElement.removeAttribute('muted'); } catch (e) {}
+    app.videoElement.muted = false;     // explicitly unmuted under the gesture
+    app.videoElement.volume = 0.0;      // silent pre-roll during intro
+    app.videoElement.play().catch(() => {});
+  }
+
+  // (Optional) if you actually use a separate <audio>, start it at volume 0 here too
+  // if (app.audioElement && app.audioElement.src && app.audioElement.src.trim() !== '') {
+  //   app.audioElement.volume = 0.0;
+  //   app.audioElement.play().catch(() => {});
+  // }
+
+  overlay.classList.add('fade-out');
+  setTimeout(() => overlay.remove(), 600);
+});
+
   // Let the video buffer silently during the intro
   if (!app.shouldIgnoreVideo && entered) {
   // Unmute video sound now that the intro is done
@@ -232,5 +250,6 @@ const skipIntro = () => {
 };
 
 const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
+
 
 
