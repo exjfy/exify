@@ -9,15 +9,15 @@ const mobileAndTabletCheck = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IE
 $(document).ready(() => {
   const links = [
     {
-      name: 'my discord',
+      name: 'biosite1',
       link: 'discord.com/users/1105635615170637864',
     },
     {
-      name: 'discord server',
+      name: 'biosite2',
       link: 'https://discord.gg/unlocked',
     },
     {
-      name: 'free fortnite cheats',
+      name: 'biosite3',
       link: 'https://tinyurl.com/3jna7bdj',
     }
   ];
@@ -38,7 +38,7 @@ $(document).ready(() => {
     app.shouldIgnoreVideo = true;
   }
 
-  app.titleChanger(['w', 'wo', 'worr', 'worried', 'worried891', 'Made by ryan']);
+  app.titleChanger(['e', 'xi', '', 'exif', 'exify']);
   app.iconChanger(['assets/icons/rose1.jpg', 'assets/icons/rose2.jpg', 'assets/icons/rose3.jpg', 'assets/icons/rose4.jpg', 'assets/icons/rose5.jpg', 'assets/icons/rose6.jpg', 'assets/icons/rose7.jpg', 'assets/icons/rose7.jpg', 'assets/icons/rose1.jpg']);
 });
 
@@ -200,3 +200,4 @@ const skipIntro = () => {
 const clearCursor = () => {
   return $('span').siblings('.typed-cursor').css('opacity', '0');
 };
+
