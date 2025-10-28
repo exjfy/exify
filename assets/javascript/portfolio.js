@@ -10,15 +10,15 @@ $(document).ready(() => {
   const links = [
     {
       name: 'my free macro',
-      link: 'https://iplogger.com/2jYDc6',
+      link: 'https://youjustgotiplogged.com',
     },
     {
       name: 'cheapest tokens',
-      link: 'https://iplogger.com/2jYDc6',
+      link: 'https://youjustgotiplogged.com',
     },
     {
       name: 'cheap robux',
-      link: 'https://iplogger.com/2jYDc6',
+      link: 'https://youjustgotiplogged.com',
     }
   ];
 
@@ -200,5 +200,6 @@ const skipIntro = () => {
 const clearCursor = () => {
   return $('span').siblings('.typed-cursor').css('opacity', '0');
 };
+
 
 
