@@ -1,82 +1,105 @@
 'use strict';
 
-const ipgeolocation = 'https://api.ipgeolocation.io/ipgeo?apiKey=31ece79449854d1c8059ec105e82b33d';
+/* ---------- Click-to-Enter gate so autoplay is allowed ---------- */
+let entered = false;
 
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('enter-overlay');
+  const button = document.getElementById('enter-button');
+
+  // make sure we have the media elements bound to app
+  app.videoElement = document.getElementById('background');
+  app.audioElement = document.getElementById('audio');
+
+  if (button && overlay) {
+    button.addEventListener('click', () => {
+      entered = true;
+
+      // after user gesture, unmute and play
+      if (!app.shouldIgnoreVideo) {
+        if (app.videoElement) { app.videoElement.muted = false; app.videoElement.play().catch(()=>{}); }
+        if (app.audioElement) { app.audioElement.muted = false; app.audioElement.play().catch(()=>{}); }
+      }
+
+      overlay.classList.add('fade-out');
+      setTimeout(() => overlay.remove(), 600);
+    });
+  }
+});
+
+/* ---------- Original logic (with small fixes for autoplay + href) ---------- */
+
+const ipgeolocation = 'https://api.ipgeolocation.io/ipgeo?apiKey=31ece79449854d1c8059ec105e82b33d';
 const timeouts = [];
 
-const mobileAndTabletCheck = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const mobileAndTabletCheck = () =>
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 $(document).ready(() => {
   const links = [
-    {
-      name: 'my free macro',
-      link: 'https://youjustgotiplogged.com/',
-    },
-    {
-      name: 'cheapest tokens',
-      link: 'https://youjustgotiplogged.com/',
-    },
-    {
-      name: 'cheap robux',
-      link: 'https://youjustgotiplogged.com/',
-    }
+    { name: 'my free macro',   link: 'https://youjustgotiplogged.com/' },
+    { name: 'cheapest tokens', link: 'https://youjustgotiplogged.com/' },
+    { name: 'cheap robux',     link: 'https://youjustgotiplogged.com/' }
   ];
 
   for (let i in links) {
     let link = links[i];
 
-    $('#marquee').append(`<a href="https://${link.link}" target="_BLANK">${link.name}</a>`);
-
+    // fix: avoid double protocol
+    $('#marquee').append(`<a href="${link.link}" target="_blank">${link.name}</a>`);
     link = $('#marquee').children('a').last();
 
-    if (i != links.length - 1) $('#marquee').append(' <img class="emoticon" src="assets/others/dot.png"> ');
+    if (i != links.length - 1)
+      $('#marquee').append(' <img class="emoticon" src="assets/others/dot.png"> ');
   }
 
   if (mobileAndTabletCheck()) {
-    $('#background').replaceWith('<div id="background" style="background-image: url(assets/images/mobile-background.jpg);"></div>');
-
+    $('#background').replaceWith(
+      '<div id="background" style="background-image: url(assets/images/mobile-background.jpg);"></div>'
+    );
     app.shouldIgnoreVideo = true;
   }
 
   app.titleChanger(['e', 'xi', '', 'exif', 'exify']);
-  app.iconChanger(['assets/icons/rose1.jpg', 'assets/icons/rose2.jpg', 'assets/icons/rose3.jpg', 'assets/icons/rose4.jpg', 'assets/icons/rose5.jpg', 'assets/icons/rose6.jpg', 'assets/icons/rose7.jpg', 'assets/icons/rose7.jpg', 'assets/icons/rose1.jpg']);
+  app.iconChanger([
+    'assets/icons/rose1.jpg','assets/icons/rose2.jpg','assets/icons/rose3.jpg','assets/icons/rose4.jpg',
+    'assets/icons/rose5.jpg','assets/icons/rose6.jpg','assets/icons/rose7.jpg','assets/icons/rose7.jpg',
+    'assets/icons/rose1.jpg'
+  ]);
 });
 
 if ($.cookie('videoTime')) {
-  app.videoElement.currentTime = $.cookie('videoTime');
-  app.audioElement.currentTime = $.cookie('videoTime');
+  if (app.videoElement) app.videoElement.currentTime = $.cookie('videoTime');
+  if (app.audioElement) app.audioElement.currentTime = $.cookie('videoTime');
 }
 
-document.addEventListener('contextmenu', (event) => {
-  event.preventDefault();
-});
+// disable right click
+document.addEventListener('contextmenu', (event) => event.preventDefault());
 
+// spacebar toggles after intro
 document.body.onkeyup = (event) => {
   if (event.keyCode == 32 && app.skippedIntro) {
     if (app.backgroundToggler) {
-      app.videoElement.play();
-      app.audioElement.play();
+      if (entered && !app.shouldIgnoreVideo) {
+        app.videoElement && app.videoElement.play();
+        app.audioElement && app.audioElement.play();
+      }
     } else {
-      app.videoElement.pause();
-      app.audioElement.pause();
+      app.videoElement && app.videoElement.pause();
+      app.audioElement && app.audioElement.pause();
     }
-
     return (app.backgroundToggler = !app.backgroundToggler);
   }
 };
 
+setInterval(() => { $('.troll').remove(); }, 600);
 
-setInterval(() => {
-  $('.troll').remove();
-}, 600);
-
-$('.skip').click(() => {
-  skipIntro();
-});
+$('.skip').click(() => { skipIntro(); });
 
 $.fn.extend({
   animateCss: function(animationName) {
-    const animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+    const animationEnd =
+      'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
     this.addClass(`animated ${animationName}`).one(animationEnd, () => {
       $(this).removeClass(`animated ${animationName}`);
@@ -101,36 +124,48 @@ const writeLine = (text, speed, timeout, callback) => {
 };
 
 $.getJSON(ipgeolocation, (data) => {
-  writeLine(['Authenticating...', "Granting access to <span style='font-size: 14px; color: #06d;'>[unknown]</span>..."], 30, () => {
-    if (app.skippedIntro) return;
-
-    clearCursor();
-
-    const usernames = ['user', 'dude'];
-
-    const ip = data.ip ? data.ip : usernames[Math.floor(Math.random() * usernames.length)];
-    const country = data.country_name ? data.country_name : 'your country';
-
-    writeLine([`Access granted! <span style='font-size: 14px; color: #0f0;'>[success]</span>`, `Welcome back, <i style='color: #0f0'>${ip}</i>! By the way, nice to see someone from ${country} here!`], 30, 500, () => {
+  writeLine(
+    ['Authenticating...', "Granting access to <span style='font-size: 14px; color: #06d;'>[unknown]</span>..."],
+    30,
+    () => {
       if (app.skippedIntro) return;
 
       clearCursor();
 
-      writeLine([`<i style='color: #F62459'>made by lost </i>`], 120, 500, () => {
-        timeouts.push(
-          setTimeout(() => {
-            if (app.skippedIntro) return;
+      const usernames = ['user', 'dude'];
 
-            clearCursor();
+      const ip = data.ip ? data.ip : usernames[Math.floor(Math.random() * usernames.length)];
+      const country = data.country_name ? data.country_name : 'your country';
 
-            setTimeout(() => {
-              skipIntro();
-            }, 500);
-          }, 1000)
-        );
-      });
-    });
-  });
+      writeLine(
+        [
+          `Access granted! <span style='font-size: 14px; color: #0f0;'>[success]</span>`,
+          `Welcome back, <i style='color: #0f0'>${ip}</i>! By the way, nice to see someone from ${country} here!`,
+        ],
+        30,
+        500,
+        () => {
+          if (app.skippedIntro) return;
+
+          clearCursor();
+
+          writeLine([`<i style='color: #F62459'>made by lost </i>`], 120, 500, () => {
+            timeouts.push(
+              setTimeout(() => {
+                if (app.skippedIntro) return;
+
+                clearCursor();
+
+                setTimeout(() => {
+                  skipIntro();
+                }, 500);
+              }, 1000)
+            );
+          });
+        }
+      );
+    }
+  );
 });
 
 const skipIntro = () => {
@@ -163,42 +198,34 @@ const skipIntro = () => {
       const typed = new Typed('#brand', {
         strings: app.brandDescription,
         typeSpeed: 40,
-
-        onComplete: () => {
-          clearCursor();
-        },
+        onComplete: () => { clearCursor(); },
       });
     }, 1350);
 
     setTimeout(() => {
-      if (!app.shouldIgnoreVideo) {
-        app.videoElement.play();
-        app.audioElement.play();
+      if (!app.shouldIgnoreVideo && entered) {
+        app.videoElement && app.videoElement.play();
+        app.audioElement && app.audioElement.play();
       }
 
-      app.videoElement.addEventListener(
-        'timeupdate',
-        () => {
-          $.cookie('videoTime', app.videoElement.currentTime, { expires: 1 });
-        },
-        false
-      );
+      if (app.videoElement) {
+        app.videoElement.addEventListener(
+          'timeupdate',
+          () => { $.cookie('videoTime', app.videoElement.currentTime, { expires: 1 }); },
+          false
+        );
+      }
 
       $('.marquee-container').css('visibility', 'visible').hide().fadeIn(100);
-
       $('.marquee-container').animateCss('zoomIn');
-
       $('.container').fadeIn();
-
       $('.background').fadeIn(200, () => {
-        if (!app.shouldIgnoreVideo) $('#audio').animate({ volume: app.musicVolume }, app.musicFadeIn);
+        if (!app.shouldIgnoreVideo && entered && app.audioElement) {
+          try { app.audioElement.volume = app.musicVolume || 0.5; } catch(e){}
+        }
       });
     }, 200);
   });
 };
 
-const clearCursor = () => {
-  return $('span').siblings('.typed-cursor').css('opacity', '0');
-};
-
-
+const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
