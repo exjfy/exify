@@ -16,12 +16,12 @@
 
   <link rel="shortcut icon" href="#" type="image/x-icon" />
   <link rel="stylesheet" href="assets/stylesheets/stylesheet.css" />
-  <!-- fix: use proper cdn url -->
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
 </head>
 
 <body>
-  <!-- Click to Enter Overlay -->
+  
   <div id="enter-overlay">
     <div id="enter-button">click to enter</div>
   </div>
@@ -33,7 +33,7 @@
       <tbody>
         <tr><td><span id="line1" style="white-space: pre;"></span></td></tr>
         <tr><td><span id="line2" style="white-space: pre;"></span></td></tr>
-        <!-- fix: invalid id -->
+        
         <tr><td><span id="line3" style="white-space: pre;"></span></td></tr>
         <tr><td><span id="line4" style="white-space: pre;"></span></td></tr>
       </tbody>
@@ -57,10 +57,10 @@
     <audio id="audio" loop>
       <source src="" type="audio/mp4" />
       <script>
-        // keep references the way your code expects
+        
         const audio = document.getElementById('audio');
         app.audioElement = audio;
-        app.audioElement.volume = 0.5; // fix: valid range is 0.0–1.0
+        app.audioElement.volume = 0.5; 
       </script>
     </audio>
 
@@ -69,7 +69,7 @@
       <script>
         const video = document.getElementById('background');
         app.videoElement = video;
-        // note: HTMLVideoElement.volume exists but many browsers ignore video volume if muted
+        
         app.videoElement.volume = 0.5;
       </script>
     </video>
@@ -83,13 +83,13 @@
     <i><a href="https://onlyfans.com/exifyandlost" target="_blank">my discord</a></i>
   </div>
 
-  <!-- libs -->
+  
   <script src="assets/javascript/lib/jquery-3.1.1.min.js"></script>
   <script src="assets/javascript/lib/jquery.marquee.min.js"></script>
   <script src="assets/javascript/lib/jquery.cookie.min.js"></script>
   <script src="assets/javascript/lib/typed.min.js"></script>
 
-  <!-- your main logic -->
+  
   <script src="assets/javascript/portfolio.js"></script>
 </body>
 </html>
