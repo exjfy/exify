@@ -8,7 +8,7 @@ class _app {
   backgroundToggler = false;
   shouldIgnoreVideo = false;
   effects = ['bounce', 'flash', 'pulse', 'rubberBand', 'shake', 'swing', 'tada', 'wobble', 'jello'];
-  brandDescription = ['#1 github skid', 'Zupa#0002', 'pause is papa', 'hecker🤓', 'pro rizzer', 'part of the lgbtq', 'nerd🤓', ':)'];
+  brandDescription = ['#free ethan', 'top 1 ranked', 'best macro na', 'exifyontop', 'lostontop', 'i hate jews', 'i hate you', ':)'];
 
   titleChanger = (text, delay) => {
     if (!text) return;
