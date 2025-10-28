@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>exify.tech</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<html>
 
-  <meta name="description" content=""/>
-  <meta name="keywords" content="pause"/>
-  <meta name="author" content=""/>
-  <meta property="og:type" content="site"/>
-  <meta property="og:title" content="Zupa.lol"/>
-  <meta property="og:description" content=""/>
-  <meta property="og:url" content="index.html"/>
-  <meta property="og:image" content=""/>
+<head>
+  <title>exify.tech</title>
+  <meta charset="UTF-8" />
+  <meta name="description" content="" />
+  <meta name="keywords" content="pause" />
+  <meta name="author" content="" />
+  <meta property="og:type" content="site" />
+  <meta property="og:title" content="Zupa.lol" />
+  <meta property="og:description" content="" />
+  <meta property="og:url" content="index.html" />
+  <meta property="og:image" content="" />
+  <meta itemprop="name" content="" />
+  <meta itemprop="description" content="Zupa.lol" />
+  <meta itemprop="image" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <link rel="shortcut icon" href="#" type="image/x-icon" />
-  <link rel="stylesheet" href="assets/stylesheets/stylesheet.css" />
-  <!-- fix: use proper cdn url -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+  <link rel="stylesheet" type="text/css" href="assets/stylesheets/stylesheet.css" />
+  <link rel="stylesheet" type="text/css"
+    href="../cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
 </head>
 
 <body>
@@ -25,26 +28,33 @@
   <div id="enter-overlay">
     <div id="enter-button">click to enter</div>
   </div>
-  <div id="fade-black"></div>
 
-  <script src="assets/javascript/app.js"></script>
+  <script type="text/javascript" src="assets/javascript/app.js"></script>
 
   <div id="main">
     <table class="box">
       <tbody>
-        <tr><td><span id="line1" style="white-space: pre;"></span></td></tr>
-        <tr><td><span id="line2" style="white-space: pre;"></span></td></tr>
-        <!-- fix: invalid id -->
-        <tr><td><span id="line3" style="white-space: pre;"></span></td></tr>
-        <tr><td><span id="line4" style="white-space: pre;"></span></td></tr>
+        <tr>
+          <td><span id="line1" style="white-space: pre;"></span></td>
+        </tr>
+        <tr>
+          <td><span id="line2" style="white-space: pre;"></span></td>
+        </tr>
+        <tr>
+          <td><span id="line3 space" style="white-space: pre;"></span></td>
+        </tr>
+        <tr>
+          <td><span id="line4" style="white-space: pre;"></span></td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <div class="container" style="display: none;">
     <h1 class="brand-header">
-      <a href="https://onlyfans.com/exifyandlost" target="_blank">exify.tech</a>
+      <a href="https://onlyfans.com/exifyandlost" target="_BLANK">exify.tech</a>
     </h1>
+
     <p><span id="brand"></span></p>
   </div>
 
@@ -55,42 +65,38 @@
   <div class="background" style="display: none;">
     <div id="pattern"></div>
 
-    <audio id="audio" loop>
+    <audio id="audio" loop="">
       <source src="" type="audio/mp4" />
       <script>
-        // keep references the way your code expects
         const audio = document.getElementById('audio');
         app.audioElement = audio;
-        app.audioElement.volume = 0.5; // fix: valid range is 0.0–1.0
+        app.audioElement.volume = 50;
       </script>
     </audio>
 
-    <video id="background" loop playsinline>
+    <video id="background" loop="">
       <source src="https://cdn.discordapp.com/attachments/1116493465136681013/1432810654942625994/EsDeeKid__Rico_Ace_-_Phantom_-_EsDeeKid_1080p_h264.mp4?ex=69026868&is=690116e8&hm=eee53d1e0b3ba72acd3a8e2f319b680c994f4f187e661a4089bc6bbefe562f34&" />
       <script>
         const video = document.getElementById('background');
         app.videoElement = video;
-        // note: HTMLVideoElement.volume exists but many browsers ignore video volume if muted
-        app.videoElement.volume = 0.5;
+        app.videoElement.volume = 50;
       </script>
     </video>
   </div>
 
   <div class="top-right">
-    <i><a class="skip" style="cursor:pointer;">skip intro</a></i>
+    <i><a class="skip">skip intro</a></i>
   </div>
 
   <div class="footer">
-    <i><a href="https://onlyfans.com/exifyandlost" target="_blank">my discord</a></i>
+    <i><a href="https://onlyfans.com/exifyandlost" target="_BLANK">my discord</a></i>
   </div>
 
-  <!-- libs -->
-  <script src="assets/javascript/lib/jquery-3.1.1.min.js"></script>
-  <script src="assets/javascript/lib/jquery.marquee.min.js"></script>
-  <script src="assets/javascript/lib/jquery.cookie.min.js"></script>
-  <script src="assets/javascript/lib/typed.min.js"></script>
-
-  <!-- your main logic -->
-  <script src="assets/javascript/portfolio.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/jquery.marquee.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/typed.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/portfolio.js"></script>
 </body>
+
 </html>
