@@ -143,17 +143,3 @@ pre { font-size: 1.15em; }
 
 #enter-button:hover { background: white; color: black; }
 #enter-overlay.fade-out { opacity: 0; pointer-events: none; }
-/* --- Crossfade-to-video layer --- */
-#fade-black {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  opacity: 1;                /* fully black during intro */
-  pointer-events: none;      /* never blocks clicks */
-  z-index: 5000;             /* below the enter overlay (z 9999) */
-  transition: opacity 1s ease;
-}
-
-#fade-black.fade-out-black {
-  opacity: 0;                /* fades to transparent when intro ends */
-}
