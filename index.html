@@ -150,38 +150,48 @@
   <script type="text/javascript" src="assets/javascript/lib/typed.min.js"></script>
   <script type="text/javascript" src="assets/javascript/portfolio.js"></script>
 
-  <!-- Popup logic -->
+    <script type="text/javascript" src="assets/javascript/lib/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/jquery.marquee.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/jquery.cookie.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/lib/typed.min.js"></script>
+  <script type="text/javascript" src="assets/javascript/portfolio.js"></script>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const popup = document.getElementById("start-popup");
-      const video = document.getElementById("background");
-      const audio = document.getElementById("audio");
+  window.addEventListener("load", () => {
+    const popup = document.getElementById("start-popup");
+    const video = document.getElementById("background");
+    const audio = document.getElementById("audio");
 
-      popup.addEventListener("click", async () => {
-        popup.classList.add("fade-out");
+    popup.addEventListener("click", async () => {
+      // Fade the popup away
+      popup.classList.add("fade-out");
 
-        try {
-          if (video) {
-            video.muted = false;
-            await video.play();
-          }
-          if (audio && audio.src) {
-            audio.volume = 0.5;
-            await audio.play();
-          }
-        } catch (err) {
-          console.warn("Autoplay blocked:", err);
+      // Autoplay unlock
+      try {
+        if (video) {
+          video.muted = false;
+          await video.play();
         }
+        if (audio && audio.src) {
+          audio.volume = 0.5;
+          await audio.play();
+        }
+      } catch (err) {
+        console.warn("Autoplay blocked:", err);
+      }
 
-        // Start intro logic here
+      // Wait for portfolio.js to load app.startIntro
+      const waitForIntro = setInterval(() => {
         if (window.app && typeof app.startIntro === "function") {
-          app.startIntro();
+          clearInterval(waitForIntro);
+          app.startIntro(); // 🔥 starts your intro sequence
         }
+      }, 100);
 
-        setTimeout(() => popup.remove(), 600);
-      });
+      // Remove popup after fade
+      setTimeout(() => popup.remove(), 600);
     });
+  });
   </script>
 </body>
-
 </html>
