@@ -13,20 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (button && overlay) {
     button.addEventListener('click', () => {
-  entered = true;
+      entered = true;
 
-  // Let the video buffer silently during the intro
-  if (!app.shouldIgnoreVideo && entered) {
-  // Unmute video sound now that the intro is done
-  if (app.videoElement) {
-    app.videoElement.muted = false;
-    app.videoElement.play().catch(() => {});
-  }
-  // Do NOT start app.audioElement yet
+      // after user gesture, unmute and play
+      if (!app.shouldIgnoreVideo) {
+        if (app.videoElement) { app.videoElement.muted = false; app.videoElement.play().catch(()=>{}); }
+        if (app.audioElement) { app.audioElement.muted = false; app.audioElement.play().catch(()=>{}); }
+      }
 
-  overlay.classList.add('fade-out');
-  setTimeout(() => overlay.remove(), 600);
-});
+      overlay.classList.add('fade-out');
+      setTimeout(() => overlay.remove(), 600);
+    });
   }
 });
 
@@ -232,4 +229,3 @@ const skipIntro = () => {
 };
 
 const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
-
