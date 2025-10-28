@@ -223,33 +223,72 @@ const skipIntro = () => {
       });
     }, 1350);
 
-    setTimeout(() => {
-      if (!app.shouldIgnoreVideo && entered) {
-        app.videoElement && app.videoElement.play();
-        app.audioElement && app.audioElement.play();
-      }
+  setTimeout(() => {
+  // start media only after intro is done
+  if (!app.shouldIgnoreVideo && entered && app.videoElement) {
+    try { app.videoElement.removeAttribute('muted'); } catch (e) {}
+    app.videoElement.muted = false;
 
-      if (app.videoElement) {
-        app.videoElement.addEventListener(
-          'timeupdate',
-          () => { $.cookie('videoTime', app.videoElement.currentTime, { expires: 1 }); },
-          false
-        );
-      }
+    // nudge play in case browser paused on attribute change
+    app.videoElement.play().catch(() => {});
 
-      $('.marquee-container').css('visibility', 'visible').hide().fadeIn(100);
-      $('.marquee-container').animateCss('zoomIn');
-      $('.container').fadeIn();
-      $('.background').fadeIn(200, () => {
-        if (!app.shouldIgnoreVideo && entered && app.audioElement) {
-          try { app.audioElement.volume = app.musicVolume || 0.5; } catch(e){}
-        }
-      });
-    }, 200);
+    // fade video volume from 0 → target
+    const target = typeof app.musicVolume === 'number' ? app.musicVolume : 0.5;
+    const step = 0.05;   // volume per tick
+    const every = 100;   // ms per tick
+    app.videoElement.volume = Math.min(app.videoElement.volume || 0, 0.0);
+
+    const fadeIv = setInterval(() => {
+      try {
+        const next = Math.min(target, app.videoElement.volume + step);
+        app.videoElement.volume = next;
+        if (next >= target) clearInterval(fadeIv);
+      } catch (e) { clearInterval(fadeIv); }
+    }, every);
+  }
+
+  // If you actually use a separate <audio> (with a real src), mirror the fade here:
+  // if (app.audioElement && app.audioElement.src && app.audioElement.src.trim() !== '') {
+  //   app.audioElement.volume = 0.0;
+  //   app.audioElement.play().catch(() => {});
+  //   const target = typeof app.musicVolume === 'number' ? app.musicVolume : 0.5;
+  //   const step = 0.05, every = 100;
+  //   const iv = setInterval(() => {
+  //     try {
+  //       const v = Math.min(target, app.audioElement.volume + step);
+  //       app.audioElement.volume = v;
+  //       if (v >= target) clearInterval(iv);
+  //     } catch (e) { clearInterval(iv); }
+  //   }, every);
+  // }
+
+  // keep saving time if you want resume
+  if (app.videoElement) {
+    app.videoElement.addEventListener('timeupdate', () => {
+      $.cookie('videoTime', app.videoElement.currentTime, { expires: 1 });
+    }, false);
+  }
+
+  // existing UI reveals
+  $('.marquee-container').css('visibility', 'visible').hide().fadeIn(100);
+  $('.marquee-container').animateCss('zoomIn');
+  $('.container').fadeIn();
+  $('.background').fadeIn(200);
+
+  // trigger crossfade from black → video/background
+  const fade = document.getElementById('fade-black');
+  if (fade) {
+    requestAnimationFrame(() => {
+      fade.classList.add('fade-out-black');
+      setTimeout(() => fade.remove(), 1200);
+    });
+  }
+}, 200);
   });
 };
 
 const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
+
 
 
 
