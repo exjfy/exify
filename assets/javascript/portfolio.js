@@ -9,16 +9,16 @@ const mobileAndTabletCheck = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IE
 $(document).ready(() => {
   const links = [
     {
-      name: 'biosite1',
-      link: 'discord.com/users/1105635615170637864',
+      name: 'my free macro',
+      link: 'https://youjustgotiplogged.com/',
     },
     {
-      name: 'biosite2',
-      link: 'https://discord.gg/unlocked',
+      name: 'cheapest tokens',
+      link: 'https://youjustgotiplogged.com/',
     },
     {
-      name: 'biosite3',
-      link: 'https://tinyurl.com/3jna7bdj',
+      name: 'cheap robux',
+      link: 'https://youjustgotiplogged.com/',
     }
   ];
 
@@ -200,4 +200,5 @@ const skipIntro = () => {
 const clearCursor = () => {
   return $('span').siblings('.typed-cursor').css('opacity', '0');
 };
+
 
