@@ -24,6 +24,11 @@
 </head>
 
 <body>
+  <!-- Click to Enter Overlay -->
+  <div id="enter-overlay">
+    <div id="enter-button">click to enter</div>
+  </div>
+
   <script type="text/javascript" src="assets/javascript/app.js"></script>
 
   <div id="main">
@@ -64,7 +69,6 @@
       <source src="" type="audio/mp4" />
       <script>
         const audio = document.getElementById('audio');
-
         app.audioElement = audio;
         app.audioElement.volume = 50;
       </script>
@@ -74,7 +78,6 @@
       <source src="https://cdn.discordapp.com/attachments/1116493465136681013/1432810654942625994/EsDeeKid__Rico_Ace_-_Phantom_-_EsDeeKid_1080p_h264.mp4?ex=69026868&is=690116e8&hm=eee53d1e0b3ba72acd3a8e2f319b680c994f4f187e661a4089bc6bbefe562f34&" />
       <script>
         const video = document.getElementById('background');
-
         app.videoElement = video;
         app.videoElement.volume = 50;
       </script>
