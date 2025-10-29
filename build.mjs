@@ -1,8 +1,10 @@
-// build.mjs — copy children of ROOT into dist/, then obfuscate target JS
+// build.mjs — copy children -> obfuscate target JS -> minify HTML/CSS
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import JavaScriptObfuscator from "javascript-obfuscator";
+import { minify as minifyHtml } from "html-minifier-terser";
+import CleanCSS from "clean-css";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = __dirname;
@@ -31,7 +33,7 @@ async function ensureDir(p) { await fs.mkdir(p, { recursive: true }); }
 function shouldSkipPath(absPath) {
   const rel = path.relative(ROOT, absPath);
   if (!rel || rel === ".") return false;
-  if (TARGETS.includes(rel)) return true;
+  if (TARGETS.includes(rel)) return true;                  // we’ll re-write these
   if (rel.startsWith(".git" + path.sep)) return true;
   if (rel.startsWith("node_modules" + path.sep)) return true;
   if (rel.startsWith("dist" + path.sep)) return true;
@@ -69,6 +71,44 @@ async function obfuscateTargets() {
   }
 }
 
+// --- Minify helpers ---
+async function* walk(dir) {
+  for (const d of await fs.readdir(dir, { withFileTypes: true })) {
+    const entry = path.join(dir, d.name);
+    if (d.isDirectory()) yield* walk(entry);
+    else yield entry;
+  }
+}
+
+const htmlMinifyOpts = {
+  collapseWhitespace: true,
+  removeComments: true,
+  removeRedundantAttributes: true,
+  removeOptionalTags: false,
+  minifyCSS: true,   // minifies inline CSS inside HTML
+  minifyJS: false    // our JS is already obfuscated separately
+};
+
+const cssMinifier = new CleanCSS({ level: 2 });
+
+async function minifyDist() {
+  let htmlCount = 0, cssCount = 0;
+  for await (const file of walk(DIST)) {
+    if (file.endsWith(".html")) {
+      const src = await fs.readFile(file, "utf8");
+      const out = await minifyHtml(src, htmlMinifyOpts);
+      await fs.writeFile(file, out, "utf8");
+      htmlCount++;
+    } else if (file.endsWith(".css")) {
+      const src = await fs.readFile(file, "utf8");
+      const { styles } = cssMinifier.minify(src);
+      await fs.writeFile(file, styles, "utf8");
+      cssCount++;
+    }
+  }
+  console.log(`minified -> ${htmlCount} HTML, ${cssCount} CSS`);
+}
+
 async function main() {
   console.log("clean dist/");
   await rimraf(DIST);
@@ -79,6 +119,9 @@ async function main() {
 
   console.log("obfuscating target JS…");
   await obfuscateTargets();
+
+  console.log("minifying HTML/CSS in dist/…");
+  await minifyDist();
 
   console.log("done. output in dist/");
 }
