@@ -1,4 +1,4 @@
-// build.mjs — copies your site to dist/ and swaps in obfuscated JS
+// build.mjs — copy children of ROOT into dist/, then obfuscate target JS
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,41 +14,48 @@ const TARGETS = [
   "assets/javascript/portfolio.js",
 ];
 
-async function rimraf(p) {
-  await fs.rm(p, { recursive: true, force: true });
-}
-async function ensureDir(p) {
-  await fs.mkdir(p, { recursive: true });
+const SKIP_NAMES = new Set([
+  "dist",
+  "node_modules",
+  ".git",
+  "build.mjs",
+  "package.json",
+  "package-lock.json",
+  "obfuscator.config.json"
+]);
+
+async function rimraf(p) { await fs.rm(p, { recursive: true, force: true }); }
+async function ensureDir(p) { await fs.mkdir(p, { recursive: true }); }
+
+function shouldSkipPath(absPath) {
+  const rel = path.relative(ROOT, absPath);
+  if (!rel || rel === ".") return false;
+  // skip target JS (we’ll write obfuscated versions later)
+  if (TARGETS.includes(rel)) return true;
+  // skip anything inside .git or node_modules or dist
+  if (rel.startsWith(".git" + path.sep)) return true;
+  if (rel.startsWith("node_modules" + path.sep)) return true;
+  if (rel.startsWith("dist" + path.sep)) return true;
+  return false;
 }
 
-async function copyEverythingExceptTargets() {
-  // copy the whole repo into dist/ while skipping stuff we don't want
-  await fs.cp(ROOT, DIST, {
+async function copyChild(src, dest) {
+  // Copy a single file/dir with filtering
+  await fs.cp(src, dest, {
     recursive: true,
     force: true,
-    filter: (srcPath) => {
-      // skip build output and node bits
-      if (srcPath === DIST) return false;
-      if (srcPath.includes(`${path.sep}dist${path.sep}`)) return false;
-      if (srcPath.endsWith(`${path.sep}dist`)) return false;
-      if (srcPath.includes(`${path.sep}node_modules${path.sep}`)) return false;
-      if (srcPath.endsWith(`${path.sep}node_modules`)) return false;
-
-      // skip git internals (but keep .github for actions)
-      if (srcPath.includes(`${path.sep}.git${path.sep}`)) return false;
-      if (srcPath.endsWith(`${path.sep}.git`)) return false;
-
-      // skip top-level build files themselves
-      const base = path.basename(srcPath);
-      if (["build.mjs", "package.json", "package-lock.json", "obfuscator.config.json"].includes(base)) return false;
-
-      // skip the JS files we will replace with obfuscated versions
-      const rel = path.relative(ROOT, srcPath);
-      if (TARGETS.includes(rel)) return false;
-
-      return true;
-    },
+    filter: (srcPath) => !shouldSkipPath(srcPath)
   });
+}
+
+async function copyRootChildren() {
+  const entries = await fs.readdir(ROOT, { withFileTypes: true });
+  for (const ent of entries) {
+    if (SKIP_NAMES.has(ent.name)) continue; // skip top-level stuff we don’t want copied
+    const src = path.join(ROOT, ent.name);
+    const dest = path.join(DIST, ent.name);
+    await copyChild(src, dest);
+  }
 }
 
 async function obfuscateTargets() {
@@ -69,16 +76,13 @@ async function main() {
   await rimraf(DIST);
   await ensureDir(DIST);
 
-  console.log("copying site (minus target JS)...");
-  await copyEverythingExceptTargets();
+  console.log("copying root children into dist/…");
+  await copyRootChildren();
 
-  console.log("obfuscating target JS...");
+  console.log("obfuscating target JS…");
   await obfuscateTargets();
 
   console.log("done. output in dist/");
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+main().catch((e) => { console.error(e); process.exit(1); });
