@@ -21,7 +21,8 @@ const SKIP_NAMES = new Set([
   "build.mjs",
   "package.json",
   "package-lock.json",
-  "obfuscator.config.json"
+  "obfuscator.config.json",
+  ".github" // keep CI config out of dist
 ]);
 
 async function rimraf(p) { await fs.rm(p, { recursive: true, force: true }); }
@@ -30,9 +31,7 @@ async function ensureDir(p) { await fs.mkdir(p, { recursive: true }); }
 function shouldSkipPath(absPath) {
   const rel = path.relative(ROOT, absPath);
   if (!rel || rel === ".") return false;
-  // skip target JS (we’ll write obfuscated versions later)
   if (TARGETS.includes(rel)) return true;
-  // skip anything inside .git or node_modules or dist
   if (rel.startsWith(".git" + path.sep)) return true;
   if (rel.startsWith("node_modules" + path.sep)) return true;
   if (rel.startsWith("dist" + path.sep)) return true;
@@ -40,7 +39,6 @@ function shouldSkipPath(absPath) {
 }
 
 async function copyChild(src, dest) {
-  // Copy a single file/dir with filtering
   await fs.cp(src, dest, {
     recursive: true,
     force: true,
@@ -51,7 +49,7 @@ async function copyChild(src, dest) {
 async function copyRootChildren() {
   const entries = await fs.readdir(ROOT, { withFileTypes: true });
   for (const ent of entries) {
-    if (SKIP_NAMES.has(ent.name)) continue; // skip top-level stuff we don’t want copied
+    if (SKIP_NAMES.has(ent.name)) continue;
     const src = path.join(ROOT, ent.name);
     const dest = path.join(DIST, ent.name);
     await copyChild(src, dest);
