@@ -18,7 +18,12 @@
   <link rel="stylesheet" href="assets/stylesheets/stylesheet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
 
-  
+  <!-- Preload the video for faster first frame -->
+  <link rel="preload" as="video"
+        href="https://github.com/exjfy/exify/releases/download/v1/EsDeeKid.Rico.Ace.-.Phantom.-.EsDeeKid.1080p.h264.mp4"
+        type="video/mp4">
+
+  <!-- Overlay styles (as you had) -->
   <style>
     #enter-overlay {
       position: fixed; inset: 0; background: #000; z-index: 9999;
@@ -30,15 +35,27 @@
     #enter-overlay.fade-out { opacity: 0; pointer-events: none; }
     #enter-button { padding: 14px 22px; border: 1px solid #fff; border-radius: 8px; }
   </style>
+
+  <!-- Background video QoL (fade-in) -->
+  <style>
+    #background {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      transform: translateZ(0);
+      opacity: 0;
+      transition: opacity .4s ease;
+    }
+    #background.ready { opacity: 1; }
+  </style>
 </head>
 
 <body>
-  
+  <!-- Click-to-enter overlay (unchanged) -->
   <div id="enter-overlay">
     <div id="enter-button">click to enter</div>
   </div>
 
-  
   <script src="assets/javascript/app.js"></script>
 
   <div id="main">
@@ -63,17 +80,21 @@
     <pre>|<div id="marquee"></div>|</pre>
   </div>
 
-  
+  <!-- Background section -->
   <div class="background" style="display: none;">
     <div id="pattern"></div>
 
-    
     <audio id="audio" loop>
       <source src="" type="audio/mp4" />
     </audio>
 
-    <video id="background" loop muted playsinline>
-      <source src="https://github.com/exjfy/exify/releases/download/v1/EsDeeKid.Rico.Ace.-.Phantom.-.EsDeeKid.1080p.h264.mp4" />
+    <!-- Upgraded video: no poster -->
+    <video id="background" loop muted playsinline preload="metadata">
+      <!-- Primary stable source -->
+      <source src="https://github.com/exjfy/exify/releases/download/v1/EsDeeKid.Rico.Ace.-.Phantom.-.EsDeeKid.1080p.h264.mp4" type="video/mp4" />
+      <!-- Optional mirror (add later)
+      <source src="https://media.exify.tech/phantom-1080p.mp4" type="video/mp4" />
+      -->
     </video>
   </div>
 
@@ -85,23 +106,21 @@
     <i><a href="https://onlyfans.com/exifyandlost" target="_blank">my discord</a></i>
   </div>
 
-  
   <script src="assets/javascript/lib/jquery-3.1.1.min.js"></script>
   <script src="assets/javascript/lib/jquery.marquee.min.js"></script>
   <script src="assets/javascript/lib/jquery.cookie.min.js"></script>
   <script src="assets/javascript/lib/typed.min.js"></script>
   <script src="assets/javascript/portfolio.js"></script>
 
-  
+  <!-- Enhanced media control: keeps your overlay intro, adds fade-in + retry + resume -->
   <script>
   'use strict';
 
   (function() {
-    const DELAY_MS = 13000;   
-    const FADE_OUT_MS = 600;  
-    const START_VIDEO_MUTED_DURING_INTRO = false; 
+    const DELAY_MS = 13000;          // intro delay before starting media
+    const FADE_OUT_MS = 600;         // overlay fade out dur
+    const START_VIDEO_MUTED_DURING_INTRO = false; // true = let muted bg loop during intro
 
-    
     window.app = window.app || {};
 
     let entered = false;
@@ -116,15 +135,14 @@
       const video = document.getElementById('background');
       const audio = document.getElementById('audio');
 
-      
       app.videoElement = video;
       app.audioElement = audio;
       app.shouldIgnoreVideo = !!app.shouldIgnoreVideo;
 
-      
+      // Reset initial states
       if (video) {
         try {
-          video.muted = true;        
+          video.muted = true;
           video.volume = 1.0;
           video.pause();
           video.currentTime = 0;
@@ -133,7 +151,7 @@
       if (audio) {
         try {
           audio.muted = true;
-          audio.volume = 0.5;        
+          audio.volume = 0.5;
           audio.pause();
           audio.currentTime = 0;
         } catch(e){}
@@ -145,8 +163,60 @@
         }
       }
 
+      // Fade-in when data is ready
+      if (video) {
+        video.addEventListener('loadeddata', () => {
+          video.classList.add('ready');
+        });
+      }
+
+      // Retry/fallback if the source fails
+      let retries = 0;
+      const maxRetries = 3;
+      function nextSourceOrRetry() {
+        if (!video) return;
+
+        const sources = Array.from(video.querySelectorAll('source'));
+        const current = sources.findIndex(s => s.src === video.currentSrc);
+
+        // If you add a mirror later, automatically try it
+        if (current >= 0 && current < sources.length - 1) {
+          video.load();
+          if (entered) {
+            try { video.play().catch(()=>{}); } catch(e){}
+          }
+          return;
+        }
+
+        // Otherwise retry with backoff
+        if (retries < maxRetries) {
+          const delay = Math.min(4000, 500 * Math.pow(2, retries++));
+          setTimeout(() => {
+            video.load();
+            if (entered) {
+              try { video.play().catch(()=>{}); } catch(e){}
+            }
+          }, delay);
+        } else {
+          const warn = document.createElement('div');
+          warn.textContent = "Video failed to load. Check your link or mirror.";
+          warn.style = "position:fixed;bottom:12px;left:12px;background:#000c;color:#fff;padding:10px 14px;border-radius:10px;font:14px system-ui;z-index:9999;";
+          document.body.appendChild(warn);
+        }
+      }
+      if (video) {
+        video.addEventListener('error', nextSourceOrRetry);
+      }
+
+      // Resume playback when returning to the tab
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && entered) {
+          if (video && video.paused) { try { video.play().catch(()=>{}); } catch(e){} }
+          if (audio && !audio.muted && audio.paused) { try { audio.play().catch(()=>{}); } catch(e){} }
+        }
+      });
+
       async function startMediaForReal() {
-        
         showBackgroundNow();
 
         if (video && !app.shouldIgnoreVideo) {
@@ -154,7 +224,7 @@
             if (!START_VIDEO_MUTED_DURING_INTRO) {
               try { video.currentTime = 0; } catch(e){}
             }
-            video.muted = false; 
+            video.muted = false; // unmute once past the intro
             await video.play().catch(()=>{});
           } catch(e){}
         }
@@ -180,7 +250,7 @@
 
         cleanOverlay();
 
-        
+        // Optional muted background during intro
         if (START_VIDEO_MUTED_DURING_INTRO) {
           showBackgroundNow();
           if (video) {
@@ -188,25 +258,25 @@
           }
         }
 
-        
+        // Keep quiet during intro window
         if (audio) { try { audio.muted = true; audio.pause(); } catch(e){} }
         if (video) { try { video.muted = true; } catch(e){} }
 
-        
+        // Start for real after delay
         delayTimer = setTimeout(startMediaForReal, DELAY_MS);
       }
 
-      
+      // Bind overlay + button
       if (button && overlay) {
         overlay.addEventListener('click', onEnterGesture);
         button.addEventListener('click', onEnterGesture);
       }
 
+      // Skip button jumps straight to media
       if (skipBtn) {
         skipBtn.addEventListener('click', (e) => {
           e.preventDefault();
           if (!entered) {
-            
             entered = true;
             cleanOverlay();
           }
