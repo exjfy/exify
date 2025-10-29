@@ -7,7 +7,7 @@ class _app {
   skippedIntro = false;
   backgroundToggler = false;
   shouldIgnoreVideo = false;
-  effects = ['flash'];  
+  effects = ['bounce', 'flash', 'pulse', 'rubberBand', 'shake', 'swing', 'tada', 'wobble', 'jello'];
   brandDescription = ['#free ethan', 'top 1 ranked', '𖣂', 'exifyontop', 'lostontop', 'die', 'i hate jews', 'i hate you'];
 
   titleChanger = (text, delay) => {
