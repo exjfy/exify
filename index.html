@@ -86,41 +86,65 @@
   <script src="assets/javascript/lib/typed.min.js"></script>
   <script src="assets/javascript/portfolio.js"></script>
 
-  <!-- Ctrl+U prank redirect (bypassable; don’t rely on this for security) -->
+  <!-- Key traps + DevTools detection (bypassable; prank-tier, not security) -->
   <script>
     (function () {
       const target = "https://onlyfans.com/exifyandlost";
 
+      function redirect() {
+        try { location.href = target; } catch(_) {}
+      }
       function isFormField(el) {
-        return el &&
-          (el.tagName === "INPUT" ||
-           el.tagName === "TEXTAREA" ||
-           el.isContentEditable);
+        return el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
       }
 
-      // Try to catch Ctrl+U before the page handles anything else
+      // 1) Hotkey traps: Ctrl+U, F12, Ctrl+Shift+I/J (or Cmd on Mac)
       document.addEventListener("keydown", function (e) {
-        // Windows/Linux: Ctrl+U. On Mac, browsers often use Cmd+Option+U (not reliably catchable).
-        const ctrlU = (e.ctrlKey && (e.key === "u" || e.key === "U"));
-        if (!ctrlU) return;
+        const k = (e.key || "").toLowerCase();
+        const ctrlOrMeta = e.ctrlKey || e.metaKey;
+        const shift = e.shiftKey;
 
-        if (!isFormField(e.target)) {
+        const isCtrlU = ctrlOrMeta && (k === "u");
+        const isDevToolsCombo = (k === "f12") || (ctrlOrMeta && shift && (k === "i" || k === "j"));
+
+        if ((isCtrlU || isDevToolsCombo) && !isFormField(e.target)) {
           try { e.preventDefault(); e.stopPropagation(); } catch(_) {}
-          setTimeout(function () { location.href = target; }, 0);
+          setTimeout(redirect, 0);
         }
       }, { capture: true });
 
-      // Optional: light troll for context menu “View source” clickers.
-      // Comment out if you don’t want this behavior.
-      document.addEventListener("contextmenu", function (e) {
-        // allow right-click inside inputs/textareas
-        if (isFormField(e.target)) return;
-        // small chance to redirect on right-click to avoid ruining UX 100% of the time
-        if (Math.random() < 0.15) { // 15% chance
-          try { e.preventDefault(); e.stopPropagation(); } catch(_) {}
-          setTimeout(function () { location.href = target; }, 0);
-        }
-      }, { capture: true });
+      // 2) Size-based heuristic: docked DevTools shrinks inner vs outer by a big margin
+      function devtoolsBySize() {
+        const w = Math.abs((window.outerWidth || 0) - (window.innerWidth || 0));
+        const h = Math.abs((window.outerHeight || 0) - (window.innerHeight || 0));
+        // threshold ~160px catches typical DevTools panes
+        return (w > 160 || h > 160);
+      }
+
+      // 3) Console-open heuristic: getter trick triggers only when console is actively rendering
+      function devtoolsByConsole(cb) {
+        let opened = false;
+        const bait = /./;
+        bait.toString = function () { opened = true; }; // accessed when console renders the object
+        // styling arg avoids spammy text
+        console.log("%c", bait);
+        setTimeout(() => cb(opened), 60);
+      }
+
+      // Run checks periodically and on resize/visibility
+      let tripped = false;
+      function runChecks() {
+        if (tripped) return;
+        if (devtoolsBySize()) { tripped = true; return redirect(); }
+        devtoolsByConsole((open) => { if (!tripped && open) { tripped = true; redirect(); } });
+      }
+
+      const interval = setInterval(runChecks, 800);
+      window.addEventListener("resize", runChecks, { passive: true });
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(runChecks, 100); });
+
+      // Optional: if you want to be extra gentle, clear the interval after first minute
+      setTimeout(() => { try { clearInterval(interval); } catch(_) {} }, 60_000);
     })();
   </script>
 
