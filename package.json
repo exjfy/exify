@@ -1,0 +1,14 @@
+{
+  "name": "exify-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static site that builds to dist/ with obfuscated JS.",
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "npx http-server dist -p 8080 -c-1"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.0"
+  }
+}
