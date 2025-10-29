@@ -60,7 +60,7 @@ $(document).ready(() => {
     app.shouldIgnoreVideo = true;
   }
 
-  app.titleChanger(['e', 'x', 'i', 'f', 'y', 'exify']);
+  app.titleChanger(['on top', 'exify', 'on top', 'exify', 'on top']);
   app.iconChanger([
     'assets/icons/rose1.jpg','assets/icons/rose2.jpg','assets/icons/rose3.jpg','assets/icons/rose4.jpg',
     'assets/icons/rose5.jpg','assets/icons/rose6.jpg','assets/icons/rose7.jpg','assets/icons/rose7.jpg',
@@ -229,5 +229,3 @@ const skipIntro = () => {
 };
 
 const clearCursor = () => $('span').siblings('.typed-cursor').css('opacity', '0');
-
-
