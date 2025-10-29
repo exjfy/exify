@@ -1,0 +1,16 @@
+{
+  "compact": true,
+  "controlFlowFlattening": true,
+  "deadCodeInjection": true,
+  "deadCodeInjectionThreshold": 0.05,
+  "identifierNamesGenerator": "hexadecimal",
+  "renameGlobals": false,
+  "selfDefending": true,
+  "stringArray": true,
+  "stringArrayEncoding": ["rc4"],
+  "stringArrayThreshold": 1,
+  "transformObjectKeys": true,
+  "unicodeEscapeSequence": false,
+  "disableConsoleOutput": true,
+  "sourceMap": false
+}
