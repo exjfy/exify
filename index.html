@@ -88,65 +88,91 @@
 
   <!-- Key traps + DevTools detection (bypassable; prank-tier, not security) -->
   <script>
-    (function () {
-      const target = "https://www.exify.tech/";
+  (function () {
+    const target = "https://www.exify.tech/";
 
-      function redirect() {
-        try { location.href = target; } catch(_) {}
-      }
-      function isFormField(el) {
-        return el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
-      }
+    function redirect() {
+      try { location.href = target; } catch(_) {}
+    }
 
-      // 1) Hotkey traps: Ctrl+U, F12, Ctrl+Shift+I/J (or Cmd on Mac)
-      document.addEventListener("keydown", function (e) {
-        const k = (e.key || "").toLowerCase();
-        const ctrlOrMeta = e.ctrlKey || e.metaKey;
-        const shift = e.shiftKey;
+    function isFormField(el) {
+      return el && (
+        el.tagName === "INPUT" ||
+        el.tagName === "TEXTAREA" ||
+        el.isContentEditable
+      );
+    }
 
-        const isCtrlU = ctrlOrMeta && (k === "u");
-        const isDevToolsCombo = (k === "f12") || (ctrlOrMeta && shift && (k === "i" || k === "j"));
+    document.addEventListener("keydown", function (e) {
+      const k = (e.key || "").toLowerCase();
+      const ctrlOrMeta = e.ctrlKey || e.metaKey;
+      const shift = e.shiftKey;
 
-        if ((isCtrlU || isDevToolsCombo) && !isFormField(e.target)) {
-          try { e.preventDefault(); e.stopPropagation(); } catch(_) {}
-          setTimeout(redirect, 0);
+      const isCtrlU = ctrlOrMeta && k === "u";
+      const isCtrlShiftC = ctrlOrMeta && shift && k === "c";
+      const isDevToolsCombo =
+        k === "f12" ||
+        (ctrlOrMeta && shift && (k === "i" || k === "j"));
+
+      if (!isFormField(e.target)) {
+        if (isCtrlShiftC) {
+          try {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          } catch(_) {}
+          return false;
         }
-      }, { capture: true });
 
-      // 2) Size-based heuristic: docked DevTools shrinks inner vs outer by a big margin
-      function devtoolsBySize() {
-        const w = Math.abs((window.outerWidth || 0) - (window.innerWidth || 0));
-        const h = Math.abs((window.outerHeight || 0) - (window.innerHeight || 0));
-        // threshold ~160px catches typical DevTools panes
-        return (w > 160 || h > 160);
+        if (isCtrlU || isDevToolsCombo) {
+          try {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          } catch(_) {}
+          setTimeout(redirect, 0);
+          return false;
+        }
       }
+    }, { capture: true });
 
-      // 3) Console-open heuristic: getter trick triggers only when console is actively rendering
-      function devtoolsByConsole(cb) {
-        let opened = false;
-        const bait = /./;
-        bait.toString = function () { opened = true; }; // accessed when console renders the object
-        // styling arg avoids spammy text
-        console.log("%c", bait);
-        setTimeout(() => cb(opened), 60);
-      }
+    function devtoolsBySize() {
+      const w = Math.abs((window.outerWidth || 0) - (window.innerWidth || 0));
+      const h = Math.abs((window.outerHeight || 0) - (window.innerHeight || 0));
+      return (w > 160 || h > 160);
+    }
 
-      // Run checks periodically and on resize/visibility
-      let tripped = false;
-      function runChecks() {
-        if (tripped) return;
-        if (devtoolsBySize()) { tripped = true; return redirect(); }
-        devtoolsByConsole((open) => { if (!tripped && open) { tripped = true; redirect(); } });
-      }
+    function devtoolsByConsole(cb) {
+      let opened = false;
+      const bait = /./;
+      bait.toString = function () { opened = true; };
+      console.log("%c", bait);
+      setTimeout(() => cb(opened), 60);
+    }
 
-      const interval = setInterval(runChecks, 800);
-      window.addEventListener("resize", runChecks, { passive: true });
-      document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(runChecks, 100); });
+    let tripped = false;
+    function runChecks() {
+      if (tripped) return;
+      if (devtoolsBySize()) { tripped = true; return redirect(); }
+      devtoolsByConsole((open) => {
+        if (!tripped && open) {
+          tripped = true;
+          redirect();
+        }
+      });
+    }
 
-      // Optional: if you want to be extra gentle, clear the interval after first minute
-      setTimeout(() => { try { clearInterval(interval); } catch(_) {} }, 60_000);
-    })();
-  </script>
+    const interval = setInterval(runChecks, 800);
+    window.addEventListener("resize", runChecks, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) setTimeout(runChecks, 100);
+    });
+
+    setTimeout(() => {
+      try { clearInterval(interval); } catch(_) {}
+    }, 60_000);
+  })();
+</script>
 
   <script>
   'use strict';
